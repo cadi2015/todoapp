@@ -53,18 +53,33 @@ public class AppExecutors { //线程池管理类，里面写了三个线程池�
                 new MainThreadExecutor());
     }
 
+    /**
+     *
+     * @return diskIO对象
+     */
     public Executor diskIO() {
         return diskIO;
     }
 
+    /**
+     *
+     * @return networkIO对象
+     */
     public Executor networkIO() {
         return networkIO;
     }
 
+    /**
+     *
+     * @return ui线程对象
+     */
     public Executor mainThread() {
         return mainThread;
     }
 
+    /**
+     * 静态内部类
+     */
     private static class MainThreadExecutor implements Executor { //还整个静态内部类，服了
         private Handler mainThreadHandler = new Handler(Looper.getMainLooper()); //UI线程的Handler啊，服了
 

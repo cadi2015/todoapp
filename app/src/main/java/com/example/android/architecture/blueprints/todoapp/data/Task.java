@@ -160,10 +160,10 @@ public final class Task {
     }
 
     /**
-     * 如果标题是空的，详细描述也是空的
-     * @return 那么Task就是空的，返回是否为空
+     * 如果标题是空的，详细描述也是空的，那么Task就是空的    说明：String为null或者字符串长度为0时，isNullOrEmpty会返回true
+     * @return 返回是否为空
      */
-    public boolean isEmpty() { // check the task is empty
+    public boolean isEmpty() { // check the task is empty 检查Task是否为空
         return Strings.isNullOrEmpty(mTitle) &&
                Strings.isNullOrEmpty(mDescription);
     }

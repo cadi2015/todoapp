@@ -66,6 +66,9 @@ public interface TasksContract { //非要把Presenter和View放在一个interfac
         void showFilteringPopUpMenu(); //过滤Task时要展示的二级菜单
     }
 
+    /**
+     * Presenter下全部是业务逻辑
+     */
     interface Presenter extends BasePresenter { //BasePresenter里面就一个start（）方法
 
         void result(int requestCode, int resultCode); //结果,打开第二个组件，关掉后，会回调到该方法，回调方法

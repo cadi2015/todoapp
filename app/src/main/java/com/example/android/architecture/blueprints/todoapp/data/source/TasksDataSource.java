@@ -29,11 +29,12 @@ import java.util.List;
  * methods to inform the user of network/database errors or successful operations.
  * For example, when a new task is created, it's synchronously stored in cache but usually every
  * operation on database or network should be executed in a different thread.
+ *  关于Tasks的数据来源操作
  */
 public interface TasksDataSource {
 
     /**
-     * 默认静态的内部接口
+     * 默认静态的内部接口 加载Tasks的回调方法
      */
     interface LoadTasksCallback { //我去，读取多个Task的回调，也要单拉出来一个接口，牛掰
 
@@ -44,6 +45,7 @@ public interface TasksDataSource {
 
     /**
      * 又一个默认静态的内部接口，好处就是不用单独写一个interface文件了，其他与写一个interface文件一样
+     * 获得Tasks的回调方法
      */
     interface GetTaskCallback {  //这是获取Task的interface回调，牛掰
 

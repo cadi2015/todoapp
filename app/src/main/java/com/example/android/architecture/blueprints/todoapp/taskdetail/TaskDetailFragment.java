@@ -83,7 +83,7 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.start(); //调用了start()方法，我们看下mPresenter在哪里初始化的
+        mPresenter.start(); //调用了start()方法，我们看下mPresenter在哪里初始化的，是调用的setPresenter方法哦
     }
 
     /**
@@ -214,14 +214,14 @@ public class TaskDetailFragment extends Fragment implements TaskDetailContract.V
     }
 
     /**
-     *  很明显，这是要跳转到编辑Task页啊，用show也没错，毕竟最后展示的是他
+     *  很明显，这是要跳转到编辑Task页啊，用show也没错，毕竟最后展示的是它
      * @param taskId
      */
     @Override
     public void showEditTask(@NonNull String taskId) {
-        Intent intent = new Intent(getContext(), AddEditTaskActivity.class);
-        intent.putExtra(AddEditTaskFragment.ARGUMENT_EDIT_TASK_ID, taskId);
-        startActivityForResult(intent, REQUEST_EDIT_TASK);
+        Intent intent = new Intent(getContext(), AddEditTaskActivity.class); //显式跳转
+        intent.putExtra(AddEditTaskFragment.ARGUMENT_EDIT_TASK_ID, taskId); //这里在Activity中放入一个Task id，而key就用都是AddEditTaskFragment下的key
+        startActivityForResult(intent, REQUEST_EDIT_TASK); //开启Activity
     }
 
     /**

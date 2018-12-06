@@ -25,21 +25,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This provides methods to help Activities load their UI.
+ * 这个提供的方法帮助Activity加载他们的ui，ui指的是fragment
  */
 public class ActivityUtils {
 
     /**
-     * The {@code fragment} is added to the container view with id {@code frameId}. The operation is
-     * performed by the {@code fragmentManager}.
-     *
+     *  将fragment依附到Activity上
+     * @param fragmentManager  一个fragmentManager对象
+     * @param fragment 一个fragment对象
+     * @param frameId 要加入的ViewId
      */
     public static void addFragmentToActivity (@NonNull FragmentManager fragmentManager,
                                               @NonNull Fragment fragment, int frameId) {
-        checkNotNull(fragmentManager);
-        checkNotNull(fragment);
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(frameId, fragment);
-        transaction.commit();
+        checkNotNull(fragmentManager); //检查fragmentManager不为null
+        checkNotNull(fragment); //检查fragment不为null
+        FragmentTransaction transaction = fragmentManager.beginTransaction(); //获得fragmentTransaction对象
+        transaction.add(frameId, fragment); //将fragment加入到指定的viewId上
+        transaction.commit(); //提交选择
     }
 
 }

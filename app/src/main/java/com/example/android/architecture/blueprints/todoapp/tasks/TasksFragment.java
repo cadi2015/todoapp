@@ -89,7 +89,7 @@ public class TasksFragment extends Fragment implements TasksContract.View { //�
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.start(); //看来在Fragment建立完后，就会调用P的start（）方法，这里面又调用了onRefresh，所以每次初始化的时候，你都看见执行下拉刷新一次
+        mPresenter.start(); //看来在Fragment建立完后，就会调用Presenter的start（）方法，这里面又调用了onRefresh，所以每次初始化的时候，你都看见执行下拉刷新一次
     }
 
     /**

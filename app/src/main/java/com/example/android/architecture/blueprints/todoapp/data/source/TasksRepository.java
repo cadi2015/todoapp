@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class TasksRepository implements TasksDataSource {
 
-    private static TasksRepository INSTANCE = null;
+    private static TasksRepository INSTANCE = null; //看样子，要整个单例了
 
     private final TasksDataSource mTasksRemoteDataSource;
 
@@ -47,40 +47,42 @@ public class TasksRepository implements TasksDataSource {
 
     /**
      * This variable has package local visibility so it can be accessed from tests.
+     * key为String、value为Task
      */
-    Map<String, Task> mCachedTasks;
-
+    Map<String, Task> mCachedTasks; //缓存Tasks用的哈希表
     /**
      * Marks the cache as invalid, to force an update the next time data is requested. This variable
      * has package local visibility so it can be accessed from tests.
+     * 标志位，标记缓存是否要被清楚吗？
      */
     boolean mCacheIsDirty = false;
 
     // Prevent direct instantiation.
     private TasksRepository(@NonNull TasksDataSource tasksRemoteDataSource,
                             @NonNull TasksDataSource tasksLocalDataSource) {
-        mTasksRemoteDataSource = checkNotNull(tasksRemoteDataSource);
-        mTasksLocalDataSource = checkNotNull(tasksLocalDataSource);
+        mTasksRemoteDataSource = checkNotNull(tasksRemoteDataSource); //传进来的远程仓库，同样也实现了TasksDataSource
+        mTasksLocalDataSource = checkNotNull(tasksLocalDataSource);   //传进来的本地仓库，同样也实现了TasksDataSource
     }
 
     /**
      * Returns the single instance of this class, creating it if necessary.
-     *
-     * @param tasksRemoteDataSource the backend data source
-     * @param tasksLocalDataSource  the device storage data source
-     * @return the {@link TasksRepository} instance
+     * 返回这个类的单个对象，如果它是必须的（非线程安全的单例，多线程下无法使用）
+     * @param tasksRemoteDataSource the backend data source 远程仓库，也称为后端仓库（服务端）
+     * @param tasksLocalDataSource  the device storage data source 本地仓库，即当前设备数据
+     * @return the {@link TasksRepository} instance 仓库对象
      */
     public static TasksRepository getInstance(TasksDataSource tasksRemoteDataSource,
                                               TasksDataSource tasksLocalDataSource) {
         if (INSTANCE == null) {
-            INSTANCE = new TasksRepository(tasksRemoteDataSource, tasksLocalDataSource);
+            INSTANCE = new TasksRepository(tasksRemoteDataSource, tasksLocalDataSource); //调用构造方法
         }
-        return INSTANCE;
+        return INSTANCE; //返回的对象
     }
 
     /**
      * Used to force {@link #getInstance(TasksDataSource, TasksDataSource)} to create a new instance
      * next time it's called.
+     * 让GC销毁对象，将静态的引用INSTANCE，赋值为null
      */
     public static void destroyInstance() {
         INSTANCE = null;
@@ -89,60 +91,78 @@ public class TasksRepository implements TasksDataSource {
     /**
      * Gets tasks from cache, local data source (SQLite) or remote data source, whichever is
      * available first.
-     * <p>
+     * 从缓存Map中获得Tasks，本地仓库或者远程仓库，无论哪个先获得
      * Note: {@link LoadTasksCallback#onDataNotAvailable()} is fired if all data sources fail to
      * get the data.
      */
     @Override
     public void getTasks(@NonNull final LoadTasksCallback callback) {
-        checkNotNull(callback);
+        checkNotNull(callback); //先检查LoadTasksCallback不为null
 
         // Respond immediately with cache if available and not dirty
+        // 缓存Map不为空&&标志位是没有清空缓存
         if (mCachedTasks != null && !mCacheIsDirty) {
-            callback.onTasksLoaded(new ArrayList<>(mCachedTasks.values()));
-            return;
+            callback.onTasksLoaded(new ArrayList<>(mCachedTasks.values())); //从Map中将value都取出来，所有的value整合为一个List
+                                                                            //然后传入ArrayList，以生成一个ArrayList对象
+                                                                            //紧接着调用LoadTasksCallback的onTasksLoaded（）方法
+                                                                            //将ArrayList传进去
+            return; //走到这个分支，上面的语句执行完，这里直接中断
         }
 
-        if (mCacheIsDirty) {
+        if (mCacheIsDirty) { //如果缓存中的是脏数据?还是没数据？这个标志位到底是干啥的？
             // If the cache is dirty we need to fetch new data from the network.
-            getTasksFromRemoteDataSource(callback);
-        } else {
+            getTasksFromRemoteDataSource(callback); //如果cache数据不好，我们需要从网络（后端）拿取新的数据
+        } else { //如果cache的数据比较理想, 从可以获得的本地数据中查询，如果还是不行，再从网络查询
             // Query the local storage if available. If not, query the network.
             mTasksLocalDataSource.getTasks(new LoadTasksCallback() {
                 @Override
                 public void onTasksLoaded(List<Task> tasks) {
-                    refreshCache(tasks);
-                    callback.onTasksLoaded(new ArrayList<>(mCachedTasks.values()));
+                    refreshCache(tasks); //刷新缓存
+                    callback.onTasksLoaded(new ArrayList<>(mCachedTasks.values())); //把缓存Map中的Values，全部取出来，组成List，传给onTasksLoaded
                 }
 
+                /**
+                 * 数据出错后
+                 */
                 @Override
                 public void onDataNotAvailable() {
-                    getTasksFromRemoteDataSource(callback);
+                    getTasksFromRemoteDataSource(callback); //从远程服务器获取数据
                 }
             });
         }
     }
 
+    /**
+     * 保存Task的方法
+     * @param task
+     */
     @Override
     public void saveTask(@NonNull Task task) {
-        checkNotNull(task);
-        mTasksRemoteDataSource.saveTask(task);
-        mTasksLocalDataSource.saveTask(task);
+        checkNotNull(task); //先检查Task是否为null
+        mTasksRemoteDataSource.saveTask(task); //远程服务器保存Task
+        mTasksLocalDataSource.saveTask(task); //本地也保存Task
 
         // Do in memory cache update to keep the app UI up to date
+        // 在内存缓存中更新，以保证应用的UI也更新
         if (mCachedTasks == null) {
-            mCachedTasks = new LinkedHashMap<>();
+            mCachedTasks = new LinkedHashMap<>(); //要是缓存Map为null，就new一个对象是了
         }
         mCachedTasks.put(task.getId(), task); //没想到大神在内存到LinkedHashMap还保留了Task对象
     }
 
+    /**
+     *  完成Task
+     * @param task
+     */
     @Override
     public void completeTask(@NonNull Task task) {
-        checkNotNull(task);
-        mTasksRemoteDataSource.completeTask(task);
-        mTasksLocalDataSource.completeTask(task);
+        checkNotNull(task);                      //检查Task不为null
+        mTasksRemoteDataSource.completeTask(task); //远程仓库标记Task
+        mTasksLocalDataSource.completeTask(task); //本地仓库标记Task
 
+        //从传入的Task中取title、取详细描述、取TaskId，然后new一个Task
         Task completedTask = new Task(task.getTitle(), task.getDescription(), task.getId(), true);
+
 
         // Do in memory cache update to keep the app UI up to date
         if (mCachedTasks == null) {

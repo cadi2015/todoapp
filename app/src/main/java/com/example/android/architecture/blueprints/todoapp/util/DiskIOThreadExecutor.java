@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
  * Executor that runs a task on a new background thread.
  */
 public class DiskIOThreadExecutor implements Executor { //Executor，线程池的底层interface
-    private final Executor mDiskIO;
+    private final Executor mDiskIO; //线程池
 
     /**
      * 初始化一个线程池，服了，就一个线程的线程池，好处是？
