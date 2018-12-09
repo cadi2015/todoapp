@@ -209,7 +209,7 @@ public class TasksPresenter implements TasksContract.Presenter { //Tasks Present
 
 
     /**
-     * 添加一条新的Task
+     * 业务逻辑，添加一条新的Task，怎么添加呢？该业务逻辑，会让TasksFragment去打开编辑页，即View上的操作
      */
     @Override
     public void addNewTask() {
