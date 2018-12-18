@@ -26,17 +26,17 @@ import com.example.android.architecture.blueprints.todoapp.BaseView;
 public interface TaskDetailContract {
 
     /**
-     * 看下View的一些变化
+     * 看下在TaskDetail页面下的每个业务逻辑，会对View带来一些什么变化，View上会怎么提示用户
      */
     interface View extends BaseView<Presenter> {
 
-        void setLoadingIndicator(boolean active); //设置加载进度条
+        void setLoadingIndicator(boolean active); //显示加载进度条，加载Task时，如果缓慢就调用
 
-        void showMissingTask(); //展示错过的任务
+        void showMissingTask(); //展示丢失的任务
 
-        void hideTitle(); //隐藏标题
+        void hideTitle(); //隐藏标题，业务上可能会用到隐藏标题吗？
 
-        void showTitle(String title); //展示标题
+        void showTitle(String title); //展示标题，有隐藏，当然就有显示了。
 
         void hideDescription(); //隐藏详细内容
 
@@ -46,26 +46,27 @@ public interface TaskDetailContract {
 
         void showEditTask(String taskId); //展示编辑Task的页面，即跳转到EditTask页
 
-        void showTaskDeleted(); //展示Task已经被删除的情况
+        void showTaskDeleted(); //展示Task已经被删除的提示，业务上有在详情页删除的逻辑，View上要有体现
 
-        void showTaskMarkedComplete(); //展示Task标记完成
+        void showTaskMarkedComplete(); //展示Task标记完成，业务上可以标记Task为完成状态，View上给用户一个提示
 
-        void showTaskMarkedActive(); //展示Task标记活跃
+        void showTaskMarkedActive(); //展示Task标记活跃，业务上标记Task为活跃状态时，View上同样给用户一个提示
 
-        boolean isActive(); //是否活跃
+        boolean isActive(); //是否活跃，还是判断Fragment是否已经依附到Activity上面
     }
 
     /**
-     * 在Task详情页下，我们会做什么
+     * 在Task详情页下，我们会做什么，即当前TaskDetail页面下需求的业务逻辑会有哪些
+     * 我记得小强喜欢把服务器的交互逻辑也放在Presenter里面，这样是有道理的
      */
     interface Presenter extends BasePresenter {
 
-        void editTask();  //编辑Task
+        void editTask();  //编辑Task，跳转到AddEditTask页面
 
-        void deleteTask(); //删除Task
+        void deleteTask(); //删除Task，直接删除掉Task，在业务上是要关闭当前的TaskDetail页的，这些都交给View去做
 
-        void completeTask(); //标记为完成的Task
+        void completeTask(); //标记Task为完成状态
 
-        void activateTask(); //标记为活动的Task
+        void activateTask(); //标记Task为活动状态
     }
 }

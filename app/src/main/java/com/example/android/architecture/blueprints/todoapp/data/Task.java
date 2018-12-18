@@ -34,21 +34,24 @@ import java.util.UUID;
 @Entity(tableName = "tasks") //表结构，Task，即是表结构，每一个对象又代表一条记录
 public final class Task {
 
-    @PrimaryKey
-    @NonNull
-    @ColumnInfo(name = "entryid") //primary key，主键
+    @PrimaryKey //主键
+    @NonNull //value不可为空
+    @ColumnInfo(name = "entryid") //字段名：entryid
     private final String mId; //id
 
     @Nullable
     @ColumnInfo(name = "title")
-    private final String mTitle; //标题
+    private final String mTitle; //标题，即Task的标题
 
     @Nullable
     @ColumnInfo(name = "description")
-    private final String mDescription; //详细描述
+    private final String mDescription; //详细描述，即Task中的内容
 
     @ColumnInfo(name = "completed")
-    private final boolean mCompleted; //完成状态
+    private final boolean mCompleted; //完成状态，Task的状态
+
+
+
 
     /**
      * Use this constructor to create a new active Task. //create a new active task
@@ -102,6 +105,17 @@ public final class Task {
         mDescription = description;
         mCompleted = completed;
     }
+
+    /**
+     * 构造方法总结（当自己去实现构造方法时，一定要先写最全状态的构造方法，其他的可以直接调用，然后不传的值，用对应的默认就好）
+     *
+     * 1、最全的一条记录，要id、title、description、completed状态，4个值均传入，这是构造完整记录的构造方法
+     * 2、只传入title、describe、completed状态，id不传，3个参数的构造方法，最终还是调用最全记录的构造方法
+     * 3、只传入title、describe、id， completed不传，同样是3个参数的构造方法，最终仍旧是调用4个记录的构造方法
+     * 4、
+     * 5、
+     */
+
 
     /**
      * 获得id的实例方法

@@ -26,6 +26,7 @@ import java.util.List;
 
 /**
  * This specifies the contract between the view and the presenter.
+ * 大牛特别用一个Contract，然后将View和Presenter作为内部接口（默认public static）
  */
 public interface TasksContract { //非要把Presenter和View放在一个interface里啊
 
