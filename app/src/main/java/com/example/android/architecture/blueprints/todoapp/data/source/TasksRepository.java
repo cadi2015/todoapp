@@ -36,35 +36,44 @@ import java.util.Map;
  * obtained from the server, by using the remote data source only if the local database doesn't
  * exist or is empty.
  * Tasks仓库类，实现了TasksDataSource接口
+ * 里面会涵盖本地仓库、远程仓库
  */
 public class TasksRepository implements TasksDataSource {
 
     private static TasksRepository INSTANCE = null; //看样子，要整个单例了
 
-    private final TasksDataSource mTasksRemoteDataSource;
+    private final TasksDataSource mTasksRemoteDataSource; //远程数据来源的Task引用
 
-    private final TasksDataSource mTasksLocalDataSource;
+    private final TasksDataSource mTasksLocalDataSource; //本地数据来源的Task引用
 
     /**
      * This variable has package local visibility so it can be accessed from tests.
-     * key为String、value为Task
+     * key为String、value为Task，每个Entry中放着Task呢
      */
     Map<String, Task> mCachedTasks; //缓存Tasks用的哈希表
     /**
      * Marks the cache as invalid, to force an update the next time data is requested. This variable
      * has package local visibility so it can be accessed from tests.
-     * 标志位，标记缓存是否要被清楚吗？
+     * 标志位，标记缓存是否无效，用于下一次强制更新请求的数据
+     * 这个变量
+     * 具有包本地可见性，因此可以从测试访问它（default权限）
      */
     boolean mCacheIsDirty = false;
 
-    // Prevent direct instantiation.
+
+    /** 私有的构造方法的目的：
+     * Prevent direct instantiation. 预防直接实例化，就是预防用构造方法直接生成一个对象，大牛你真牛b
+     * @param tasksRemoteDataSource
+     * @param tasksLocalDataSource
+     */
     private TasksRepository(@NonNull TasksDataSource tasksRemoteDataSource,
                             @NonNull TasksDataSource tasksLocalDataSource) {
-        mTasksRemoteDataSource = checkNotNull(tasksRemoteDataSource); //传进来的远程仓库，同样也实现了TasksDataSource
-        mTasksLocalDataSource = checkNotNull(tasksLocalDataSource);   //传进来的本地仓库，同样也实现了TasksDataSource
+        mTasksRemoteDataSource = checkNotNull(tasksRemoteDataSource); //传进来的远程仓库对象，同样也实现了TasksDataSource接口
+        mTasksLocalDataSource = checkNotNull(tasksLocalDataSource);   //传进来的本地仓库对象，同样也实现了TasksDataSource接口
     }
 
     /**
+     * 有了private构造方法，总得有返回对象的办法
      * Returns the single instance of this class, creating it if necessary.
      * 返回这个类的单个对象，如果它是必须的（非线程安全的单例，多线程下无法使用）
      * @param tasksRemoteDataSource the backend data source 远程仓库，也称为后端仓库（服务端）
@@ -82,7 +91,7 @@ public class TasksRepository implements TasksDataSource {
     /**
      * Used to force {@link #getInstance(TasksDataSource, TasksDataSource)} to create a new instance
      * next time it's called.
-     * 让GC销毁对象，将静态的引用INSTANCE，赋值为null
+     * 让GC销毁对象，将对的静态的引用INSTANCE，赋值为null，这样GC发现对象没有引用指向它了，就把对象回收了
      */
     public static void destroyInstance() {
         INSTANCE = null;
@@ -171,10 +180,17 @@ public class TasksRepository implements TasksDataSource {
         mCachedTasks.put(task.getId(), completedTask);
     }
 
+    /**
+     * 标记Task为complete的时候，调用的方法
+     * @param taskId 传入一个String的TaskId即可
+     *               也就是说如果你要为一个Task标记为complete,那么传TaskId、或者直接传Task对象都可以，大牛牛逼
+     */
     @Override
     public void completeTask(@NonNull String taskId) {
-        checkNotNull(taskId);
-        completeTask(getTaskWithId(taskId));
+        checkNotNull(taskId); //先检查String的taskID，是不是为null，字符数量是否为0
+        completeTask(getTaskWithId(taskId)); //马上调用一个重载的方法，他俩方法签名不一样， 名字一样，但参数列表不同，主要是类型
+                                             //getTaskWithId(taskId),会通过id，返回对应的Task对象
+                                             // 一个是 completeTask(String)      另一个是  completeTask(Task)
     }
 
     /**
@@ -196,10 +212,14 @@ public class TasksRepository implements TasksDataSource {
         mCachedTasks.put(task.getId(), activeTask); //用task的id作为key，Task对象作为value，放入到缓存的Map中
     }
 
+    /**
+     * 一个重载方法，标记Task为activate
+     * @param taskId 传入Task的id即可
+     */
     @Override
     public void activateTask(@NonNull String taskId) {
-        checkNotNull(taskId);
-        activateTask(getTaskWithId(taskId));
+        checkNotNull(taskId); //检查String不为null
+        activateTask(getTaskWithId(taskId)); //最终还是调用了 activateTask(Task)
     }
 
     @Override
@@ -260,19 +280,27 @@ public class TasksRepository implements TasksDataSource {
                 callback.onTaskLoaded(task);
             }
 
+            /**
+             * 如果没有获得Task时，会被调用的方法
+             */
             @Override
             public void onDataNotAvailable() {
-                mTasksRemoteDataSource.getTask(taskId, new GetTaskCallback() {
+                mTasksRemoteDataSource.getTask(taskId, new GetTaskCallback() { //去远程仓库拿Task
                     @Override
                     public void onTaskLoaded(Task task) {
-                        // Do in memory cache update to keep the app UI up to date
+                        // Do in memory cache update to keep the app UI up to date 使用内存缓存更新，以保证app中展示最新的数据
                         if (mCachedTasks == null) {
-                            mCachedTasks = new LinkedHashMap<>();
+                            mCachedTasks = new LinkedHashMap<>(); // 有序的哈希表，默认是用插入Entry的顺序作为遍历元素时的顺序
                         }
-                        mCachedTasks.put(task.getId(), task);
-                        callback.onTaskLoaded(task);
+                        mCachedTasks.put(task.getId(), task); // //向里面插入 key value、key是Task的id、value就是Task对象
+                        callback.onTaskLoaded(task); //把Task对象传到回调的onnTaskLoaded方法
                     }
 
+                    /**
+                     * GetTaskCallback匿名内部类中的另一个抽象方法
+                     *  如果去远程仓库中拿数据，没有拿到的化，就调用这个方法
+                     *  最终还是调用传入的callback对象的onDataNotAvailable（）方法
+                     */
                     @Override
                     public void onDataNotAvailable() {
                         callback.onDataNotAvailable();
@@ -324,11 +352,15 @@ public class TasksRepository implements TasksDataSource {
         mTasksRemoteDataSource.getTasks(new LoadTasksCallback() { //调用远程仓库的任务
             @Override
             public void onTasksLoaded(List<Task> tasks) {
-                refreshCache(tasks);
-                refreshLocalDataSource(tasks);
-                callback.onTasksLoaded(new ArrayList<>(mCachedTasks.values()));
+                refreshCache(tasks); //刷新一下有序的哈希表，进入看看怎么刷的
+                refreshLocalDataSource(tasks); //更新本地仓库数据
+                callback.onTasksLoaded(new ArrayList<>(mCachedTasks.values()));//把缓存的Task List，传入到LoadTasksCallback对象中的onTasksLoaded方法中
             }
 
+            /**
+             *  如果没有从远程仓库拿到数据
+             *  就直接调用你LoadTasksCallback的onDateNotAvailable（）方法了
+             */
             @Override
             public void onDataNotAvailable() {
                 callback.onDataNotAvailable();
@@ -336,21 +368,26 @@ public class TasksRepository implements TasksDataSource {
         });
     }
 
-    private void refreshCache(List<Task> tasks) {
-        if (mCachedTasks == null) {
-            mCachedTasks = new LinkedHashMap<>();
+    private void refreshCache(List<Task> tasks) { //接受一个List
+        if (mCachedTasks == null) { //这个内存缓存用的有序哈希表，服了啊
+            mCachedTasks = new LinkedHashMap<>(); //new 一个 呗
         }
-        mCachedTasks.clear();
-        for (Task task : tasks) {
-            mCachedTasks.put(task.getId(), task);
+        mCachedTasks.clear(); //把有序哈希表中的元素全部干掉，即把所有Entry都干掉
+        for (Task task : tasks) { //遍历传入的线性表
+            mCachedTasks.put(task.getId(), task); //把List中的每一个Task对象，统统放到哈希表中，Task的id作为key，Task对象作为value
         }
-        mCacheIsDirty = false;
+        mCacheIsDirty = false; //更新标志位了，缓存是否为脏的，更新为false，即否
     }
 
+
+    /**
+     * 刷新本地仓库数据
+     * @param tasks 接受一个Task组成的线性表
+     */
     private void refreshLocalDataSource(List<Task> tasks) {
-        mTasksLocalDataSource.deleteAllTasks();
-        for (Task task : tasks) {
-            mTasksLocalDataSource.saveTask(task);
+        mTasksLocalDataSource.deleteAllTasks(); //先把本地仓库中，所有的Task都删除掉
+        for (Task task : tasks) { //然后把传入进来的List中的Task全部再放到本地仓库里
+            mTasksLocalDataSource.saveTask(task); //风骚操作啊
         }
     }
 

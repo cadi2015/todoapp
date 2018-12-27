@@ -200,6 +200,7 @@ public final class Task {
 
     /**
      *  重写的hashCode方法，老朋友
+     *  只要重写了equals方法，意味着想比较对象，那么就必须跟着重写hashCode方法，不然哈希表里面没法用了
      * @return
      */
     @Override

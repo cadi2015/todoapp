@@ -76,7 +76,7 @@ public class TaskDetailActivity extends AppCompatActivity {
      */
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
+        onBackPressed(); //同back键按下效果
+        return true; //返回true
     }
 }

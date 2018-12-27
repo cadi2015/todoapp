@@ -58,6 +58,7 @@ public interface TaskDetailContract {
     /**
      * 在Task详情页下，我们会做什么，即当前TaskDetail页面下需求的业务逻辑会有哪些
      * 我记得小强喜欢把服务器的交互逻辑也放在Presenter里面，这样是有道理的
+     * 服务器的交互逻辑，也是业务逻辑，他这么做也是有道理的撒
      */
     interface Presenter extends BasePresenter {
 

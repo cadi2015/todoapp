@@ -261,7 +261,7 @@ public class TasksPresenter implements TasksContract.Presenter { //Tasks Present
     }
 
     /**
-     * Sets the current task filtering type.
+     * Sets the current task filtering type. 设置当前Task的过滤类型
      *
      * @param requestType Can be {@link TasksFilterType#ALL_TASKS},
      *                    {@link TasksFilterType#COMPLETED_TASKS}, or
