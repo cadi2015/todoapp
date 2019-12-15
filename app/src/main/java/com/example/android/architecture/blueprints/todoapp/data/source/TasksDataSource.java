@@ -31,7 +31,7 @@ import java.util.List;
  * operation on database or network should be executed in a different thread.
  *  关于Tasks的数据来源操作
  */
-public interface TasksDataSource {
+public interface TasksDataSource { //不仅自己具备很多方法，还有俩个内部的static接口
 
     /**
      * 默认静态的内部接口 加载Tasks的回调方法
@@ -62,9 +62,9 @@ public interface TasksDataSource {
 
     void completeTask(@NonNull Task task); //修改一条Task为完成状态
 
-    void completeTask(@NonNull String taskId); //透过taskId也可以将一条Task，标记为完成状态
+    void completeTask(@NonNull String taskId); //透过taskId也可以将一条Task标记为完成状态
 
-    void activateTask(@NonNull Task task); //活动Task，通过一条Task对象
+    void activateTask(@NonNull Task task); //活动Task，通过传入的Task对象
 
     void activateTask(@NonNull String taskId); //活动Task，通过taskId找到
 

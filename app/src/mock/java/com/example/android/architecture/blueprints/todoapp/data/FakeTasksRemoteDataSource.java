@@ -30,14 +30,15 @@ import java.util.Map;
  * Implementation of a remote data source with static access to the data for easy testing.
  * 模拟的远程Task类，实现了TasksDataSource
  */
-public class FakeTasksRemoteDataSource implements TasksDataSource {
+public class FakeTasksRemoteDataSource implements TasksDataSource { //我去看看具备什么样的能力（实现了TasksDataSource接口）
 
-    private static FakeTasksRemoteDataSource INSTANCE;
+    private static FakeTasksRemoteDataSource INSTANCE; //单例，非线程安全(如果是在字节码加载的虚拟机的时候，初始化的话，就是个线程安全了）
 
-    private static final Map<String, Task> TASKS_SERVICE_DATA = new LinkedHashMap<>();
+    private static final Map<String, Task> TASKS_SERVICE_DATA = new LinkedHashMap<>(); //用了有序的HashMap,看看要干嘛
 
     // Prevent direct instantiation.
     private FakeTasksRemoteDataSource() {}
+
 
     public static FakeTasksRemoteDataSource getInstance() {
         if (INSTANCE == null) {
@@ -46,11 +47,23 @@ public class FakeTasksRemoteDataSource implements TasksDataSource {
         return INSTANCE;
     }
 
+    /**
+     * 获得所有任务的实现方法
+     * @param callback 接受一个实现了LoadTasksCallback接口的对象
+     */
     @Override
     public void getTasks(@NonNull LoadTasksCallback callback) {
-        callback.onTasksLoaded(Lists.newArrayList(TASKS_SERVICE_DATA.values()));
+        callback.onTasksLoaded(Lists.newArrayList(TASKS_SERVICE_DATA.values())); //里面会调用传入的实现了LoadTasksCallback接口的对象的onTasksLoaded方法
+                                                                                //onTasksLoaded方法中接受一个什么呢？
+                                                                                //再把LinkedHashMap中的所有Value，转换成一个ArrayList传进去，牛比，看来HashMap的key和value都可以全部拿出来使用，牛逼
+                                   //onTasksLoaded就是个典型的回调方法，有意思
     }
 
+    /**
+     * 获得一个任务的方法
+     * @param taskId
+     * @param callback
+     */
     @Override
     public void getTask(@NonNull String taskId, @NonNull GetTaskCallback callback) {
         Task task = TASKS_SERVICE_DATA.get(taskId);
