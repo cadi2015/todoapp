@@ -28,11 +28,11 @@ import java.util.Map;
 
 /**
  * Implementation of a remote data source with static access to the data for easy testing.
- * 模拟的远程Task类，实现了TasksDataSource
+ * 模拟的远程Tasks类，实现了TasksDataSource
  */
 public class FakeTasksRemoteDataSource implements TasksDataSource { //我去看看具备什么样的能力（实现了TasksDataSource接口）
 
-    private static FakeTasksRemoteDataSource INSTANCE; //单例，非线程安全(如果是在字节码加载的虚拟机的时候，初始化的话，就是个线程安全了）
+    private static FakeTasksRemoteDataSource INSTANCE; //单例，非线程安全(如果是在字节码加载的虚拟机的时候，初始化的话，就是个线程安全了，可惜是在静态方法里初始化的）
 
     private static final Map<String, Task> TASKS_SERVICE_DATA = new LinkedHashMap<>(); //用了有序的HashMap,看看要干嘛
 

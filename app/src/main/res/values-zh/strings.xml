@@ -15,9 +15,9 @@
   -->
 
 <resources>
-    <string name="app_name">TO-DO-MVP</string>
-    <string name="add_task">New TO-DO</string>
-    <string name="edit_task">Edit TO-DO</string>
+    <string name="app_name">王员外-MVP</string>
+    <string name="add_task">新增 任务</string>
+    <string name="edit_task">编辑 任务</string>
     <string name="task_marked_complete">任务标记为完成</string>
     <string name="task_marked_active">任务标记为活动</string>
     <string name="loading_tasks_error">加载任务错误</string>

@@ -34,8 +34,8 @@ import java.util.UUID;
 @Entity(tableName = "tasks") //表结构，Task，即是表结构，每一个对象又代表一条记录
 public final class Task {
 
-    @PrimaryKey //主键
-    @NonNull //value不可为空
+    @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "entryid") //字段名：entryid
     private final String mId; //id
 

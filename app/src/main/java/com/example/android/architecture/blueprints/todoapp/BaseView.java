@@ -18,6 +18,6 @@ package com.example.android.architecture.blueprints.todoapp;
 
 public interface BaseView<T> {
 
-    void setPresenter(T presenter); //设置Presenter
+    void setPresenter(T presenter); //设置Presenter，也是每一个View具备的能力，此View与Android的View没关系
 
 }

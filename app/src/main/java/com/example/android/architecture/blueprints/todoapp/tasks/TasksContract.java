@@ -26,29 +26,29 @@ import java.util.List;
 
 /**
  * This specifies the contract between the view and the presenter.
- * 大牛特别用一个Contract，然后将View和Presenter作为内部接口（默认public static）
+ * 大牛特别用一个Contract接口，然后将View和Presenter作为内部接口整合在一起，高度封装，牛逼（默认public static）
  */
 public interface TasksContract { //非要把Presenter和View放在一个interface里啊
 
     /**
      * View下全部是根据业务逻辑，View应该怎么显示的方法
-     * 比如加载Task时，View要先有loading
+     * 比如加载一个Task时，View要先有loading
      * 比如从数据库加载完Task到内存后，View要展示Task List
-     * 比如要新建一个Task，View上就是要展示EditTask页给用户
-     * 要查看Task的详细情况，View上就是展示Task详情页给用户
-     * 标记Task为活动状态时，View上要给用户一个提示
-     * 标记Task为完成状态时，View上也要给用户一个提示
-     * 当业务上没有Task时，View也要展示一个空白图片给用户
-     * 当加载Task出错时，View上也要给用户一个出错的图片给用户
-     * 根据过滤标签，View展示对应的Task，比如已完成、正在活动的过滤标签
-     * 当过滤Task没有时，View上有个容错，提示用户没有已完成Task、或者没有正在活动的Task，这些展示的都是个图片提示
+     * 比如在主页要新建一个Task，View上就是要展示EditTask页给用户
+     * 比如在主页要查看一个Task的详细情况，View上就是要展示Task详情页给用户
+     * 比如在主页要标记一个Task为活动状态时，View上要给用户一个已经标记为活动的提示
+     * 比如在主页标记Task为完成状态时，View上也要给用户一个已经是完成的提示
+     * 比如在主页，在业务上是没有Task时，View也要展示一个空白图片给用户
+     * 比如在主页，当加载一个Task发生出错时，View上也要给用户一个出错的图片给用户
+     * 比如在主页根据不同的过滤标签，View要展示对应的Task，比如已完成、正在活动的过滤标签
+     * 比如在操作过滤Task时，没有数据，则View上也有个容错，提示用户没有已完成Task、或者没有正在活动的Task，这些展示的都是个图片提示
      * 当用户添加Task成功后，View上也要有个提示，告诉用户你成功了
      * View上还有一个判断Task是否为活动状态（其实是View是否加载完成，不是指Task真正活动的意思）
-     * 当用户要选择过滤标签时，View上要弹出一个二级菜单给用户
+     * 当用户在主页要选择过滤标签时，View上要弹出一个二级菜单给用户
      */
     interface View extends BaseView<Presenter> { //View接口也不少方法，当然别忘了，还有个setPresenter（Presenter p），在BaseView
 
-        void setLoadingIndicator(boolean active); //展示加载Loading
+        void setLoadingIndicator(boolean active); //展示加载Loading（用于的业务逻辑是加载Tasks时用）
 
         void showTasks(List<Task> tasks); //加载完Task，需要展示Task，传入一个包含Task的线性表
 
@@ -84,15 +84,16 @@ public interface TasksContract { //非要把Presenter和View放在一个interfac
     }
 
     /**
-     * Presenter下全部是业务逻辑（就是我的写业务case啊）支持的功能，比如要新建Task、设置过滤类型、删除标记为完成的任务、标记Task为完成
-     * 标记Task为活动、查看Task详情、加载Task到页面
+     * Presenter下全部是业务逻辑（就是我的写业务case啊）这里是主页支持的交互功能
+     * 比如要新建Task、设置过滤类型、删除标记为完成的任务、标记Task为完成
+     * 标记Task为活动、查看Task详情、加载Task到主页
      */
-    interface Presenter extends BasePresenter { //BasePresenter里面就一个start（）方法
+    interface Presenter extends BasePresenter { //BasePresenter里面就一个start（）方法，是每一个Presenter必须具备的能力
 
-        void result(int requestCode, int resultCode); //结果,打开第二个组件，关掉后，第二个组件传递过来值，然后会回调到该方法，这是个回调方法
+        void result(int requestCode, int resultCode); //结果,打开第二个组件，关掉第二个组件后，第二个组件传递过来值，然后会回调到该方法，这是个回调方法
 
-        void loadTasks(boolean forceUpdate); //加载Task，支持是否强制更新,在加载Task的业务逻辑上，View上会有很多变化
-                                             //加载未完成时，要展示loading、加载完成后，loading隐藏，显示Task，如果有提示，就弹出toast
+        void loadTasks(boolean forceUpdate); //主页加载Tasks的业务逻辑，支持是否强制更新,在加载Task的业务逻辑上，View上会有很多变化
+                                             //加载未完成时，要先展示loading、加载完成后，loading会隐藏，数据加载完后会显示Task，如果有提示，就弹出Toast
                                              //这些全部放到View上去处理
 
         void addNewTask(); //添加一个新的Task,业务逻辑上是要打开编辑Task页

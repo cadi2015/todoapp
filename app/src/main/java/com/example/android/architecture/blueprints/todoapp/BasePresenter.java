@@ -18,6 +18,6 @@ package com.example.android.architecture.blueprints.todoapp;
 
 public interface BasePresenter {
 
-    void start(); //一个开始的方法
+    void start(); //一个开始的方法,每一个Presenter都应该具备的能力
 
 }

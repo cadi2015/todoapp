@@ -21,6 +21,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
+import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -33,7 +34,7 @@ import java.util.concurrent.Executors;
  */
 public class AppExecutors { //线程池管理类，里面写了三个线程池，刺激，每个线程池都有自己的用途
 
-    private static final int THREAD_COUNT = 3; //线程池中的线程数量
+    private static final int THREAD_COUNT = 3; //线程池中的核心线程数量
 
     private final Executor diskIO; //磁盘线程池吗？
 
@@ -66,12 +67,14 @@ public class AppExecutors { //线程池管理类，里面写了三个线程池�
      * @return networkIO对象
      */
     public Executor networkIO() {
+        HashMap<String,String> temp = new HashMap();
+        temp.put("美女","貂蝉");
         return networkIO;
     }
 
     /**
      *
-     * @return ui线程对象
+     * @return ui线程对象(单独算作一个线程池，写的精妙无比，草）
      */
     public Executor mainThread() {
         return mainThread;
@@ -85,7 +88,7 @@ public class AppExecutors { //线程池管理类，里面写了三个线程池�
 
         @Override
         public void execute(@NonNull Runnable command) {
-            mainThreadHandler.post(command);  //我看无法是把Runnable放入到MessageQueue中啊，虽然在里面Runnable会被转换为Message
+            mainThreadHandler.post(command);  //虽然在里面Runnable会被转换为Message
         } //Handler的post方法干了啥了，发过去一个Runnable对象，就是放到MessageQueue里面，交给Ui线程执行啊。。。
     }
 }

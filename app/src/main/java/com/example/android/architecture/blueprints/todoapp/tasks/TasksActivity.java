@@ -52,7 +52,6 @@ public class TasksActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tasks_act); //设置Layout
 
-        // Set up the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
@@ -67,7 +66,7 @@ public class TasksActivity extends AppCompatActivity {
             setupDrawerContent(navigationView);
         }
 
-        TasksFragment tasksFragment =
+        TasksFragment tasksFragment = //相关的展示View对象也在主Activity下创建
                 (TasksFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame); //通过一个占位View的id找Fragment
         if (tasksFragment == null) {  //上面找不到Fragment的话，就创建哈哈
             // Create the fragment
@@ -76,7 +75,7 @@ public class TasksActivity extends AppCompatActivity {
                     getSupportFragmentManager(), tasksFragment, R.id.contentFrame);
         }
 
-        // Create the presenter ,在这里将TasksFragment传过去了，在这里将fragment、tasksRepository以及和presenter绑定在一起，当然还创建一个TasksRepository
+        // Create the presenter相关业务逻辑presenter对象在主Activity下创建 ,在这里将TasksFragment传过去了，在这里将fragment、tasksRepository以及和presenter绑定在一起，当然还创建一个TasksRepository
         mTasksPresenter = new TasksPresenter(
                 Injection.provideTasksRepository(getApplicationContext()), tasksFragment); //创建一个P，把M也创建了，作为V的Fragment就更不用说了
 

@@ -31,12 +31,12 @@ public abstract class ToDoDatabase extends RoomDatabase {
 
     private static ToDoDatabase INSTANCE;
 
-    public abstract TasksDao taskDao();  //TasksDao作为对Task的操作一些方法，就是增删改查都在里面
+    public abstract TasksDao taskDao();  //TasksDao作为对Task的操作一些方法，就是增删改查都在里面（业务逻辑）
 
     private static final Object sLock = new Object(); //创建一个对象，用作锁
 
     public static ToDoDatabase getInstance(Context context) {
-        synchronized (sLock) { //我去，这里还用了对象锁撒，哪根线程拿到锁，哪根线程执行该代码块
+        synchronized (sLock) { //我去，这里还用了对象锁撒，哪根线程拿到锁，哪根线程才能执行该代码块
             if (INSTANCE == null) {
                 INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                         ToDoDatabase.class, "Tasks.db") //还要Class对象，我去,很明显这里创建了名为Tasks.db的数据库

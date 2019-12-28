@@ -37,7 +37,7 @@ public class Injection {
 
     public static TasksRepository provideTasksRepository(@NonNull Context context) {
         checkNotNull(context);
-        ToDoDatabase database = ToDoDatabase.getInstance(context); //fk，一看就是数据库了，用的Room数据库，听说挺牛逼
+        ToDoDatabase database = ToDoDatabase.getInstance(context); //fk，一看就是数据库了，听说挺牛逼
         return TasksRepository.getInstance(FakeTasksRemoteDataSource.getInstance(), //这个任务仓库需要两个对象，一个伪装的远层数据资源对象？大写懵逼，一个本地数据资源对象
                 TasksLocalDataSource.getInstance(new AppExecutors(),
                         database.taskDao()));     //好吧，TasksRepository

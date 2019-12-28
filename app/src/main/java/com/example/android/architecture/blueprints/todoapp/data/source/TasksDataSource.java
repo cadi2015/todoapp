@@ -29,7 +29,7 @@ import java.util.List;
  * methods to inform the user of network/database errors or successful operations.
  * For example, when a new task is created, it's synchronously stored in cache but usually every
  * operation on database or network should be executed in a different thread.
- *  关于Tasks的数据来源操作
+ * 业务逻辑下Tasks的增删改查，应该具备哪些能力呢，增删改（写)、查(读)
  */
 public interface TasksDataSource { //不仅自己具备很多方法，还有俩个内部的static接口
 
@@ -54,25 +54,25 @@ public interface TasksDataSource { //不仅自己具备很多方法，还有俩�
         void onDataNotAvailable(); //当数据没有获得
     }
 
-    void getTasks(@NonNull LoadTasksCallback callback); //返回所有的Tasks
+    void getTasks(@NonNull LoadTasksCallback callback); //返回所有的Tasks(读操作）
 
-    void getTask(@NonNull String taskId, @NonNull GetTaskCallback callback); //获得一条Task
+    void getTask(@NonNull String taskId, @NonNull GetTaskCallback callback); //获得一条Task（读操作）
 
-    void saveTask(@NonNull Task task); //保存一条Task
+    void saveTask(@NonNull Task task); //保存一条Task（增操作）
 
-    void completeTask(@NonNull Task task); //修改一条Task为完成状态
+    void completeTask(@NonNull Task task); //修改一条Task为完成状态（改操作）
 
-    void completeTask(@NonNull String taskId); //透过taskId也可以将一条Task标记为完成状态
+    void completeTask(@NonNull String taskId); //透过taskId也可以将一条Task标记为完成状态（写操作)
 
-    void activateTask(@NonNull Task task); //活动Task，通过传入的Task对象
+    void activateTask(@NonNull Task task); //通过传入的Task对象，需修改Task记录(写操作）
 
-    void activateTask(@NonNull String taskId); //活动Task，通过taskId找到
+    void activateTask(@NonNull String taskId); //通过传入taskId，修改为activate记录（写操作)
 
-    void clearCompletedTasks(); //清空所有已完成的Task
+    void clearCompletedTasks(); //清空所有已完成的Task(删）
 
-    void refreshTasks(); //刷新Tasks
+    void refreshTasks(); //刷新Tasks（读操作）
 
-    void deleteAllTasks(); //删除所有的Tasks
+    void deleteAllTasks(); //删除所有的Tasks(删操作）
 
-    void deleteTask(@NonNull String taskId); //通过taskId，删除一条Task
+    void deleteTask(@NonNull String taskId); //通过taskId，删除一条Task（删操作）
 }
